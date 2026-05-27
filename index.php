@@ -2,7 +2,16 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-// Mengambil data aman langsung dari sistem environment GitHub Actions
+// Ambil nilai dari environment dan paksa diubah menjadi angka murni (integer)
+$ocpus = getenv('OCI_OCPUS');
+$memory = getenv('OCI_MEMORY_IN_GBS');
+$bootVolume = getenv('OCI_BOOT_VOLUME_SIZE_IN_GBS');
+
+$ociOcpus = $ocpus ? (int)$ocpus : 4;
+$ociMemory = $memory ? (int)$memory : 24;
+$ociBootVolume = $bootVolume ? (int)$bootVolume : 100;
+
+// Masukkan variabel angka murni ke dalam konfigurasi OCI
 $config = new Hitrov\OciConfig(
     getenv('OCI_REGION') ?: 'ap-batam-1',
     getenv('OCI_USER_OCID') ?: '',
@@ -10,18 +19,16 @@ $config = new Hitrov\OciConfig(
     getenv('OCI_COMPARTMENT_OCID') ?: '',
     getenv('OCI_FINGERPRINT') ?: '',
     getenv('OCI_PRIVATE_KEY') ?: '',
-    (int)(getenv('OCI_OCPUS') ?: 4),
-    (int)(getenv('OCI_MEMORY_IN_GBS') ?: 24),
-    (int)(getenv('OCI_BOOT_VOLUME_SIZE_IN_GBS') ?: 100),
+    $ociOcpus,
+    $ociMemory,
+    $ociBootVolume,
     getenv('OCI_DISPLAY_NAME') ?: 'openclaw-server'
 );
 
-// Jalankan script utama pemburu server ARM
-$api = new Hitrov\OciApi();
 echo "Memulai perburuan server OCI ARM di region: " . (getenv('OCI_REGION') ?: 'ap-batam-1') . "\n";
 
+$api = new Hitrov\OciApi();
 try {
-    // Memanggil fungsi bawaan dari repositori untuk membuat server
     $api->createAvailabilityDomainInstances($config);
 } catch (\Exception $e) {
     echo "Status: " . $e->getMessage() . "\n";
