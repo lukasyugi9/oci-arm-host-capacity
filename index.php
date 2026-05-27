@@ -61,7 +61,7 @@ $api = new OciApi();
 echo "Memulai perburuan server OCI ARM di region Batam dengan pencocokan parameter fleksibel...\n";
 
 try {
-    $api->createInstances($config);
+    $api->create($config);
 } catch (\Exception $e) {
     echo "Status Response Oracle: " . $e->getMessage() . "\n";
 }
