@@ -62,9 +62,9 @@ echo "Memulai perburuan server OCI ARM di region Batam dengan pencocokan paramet
 
 // Menjalankan fungsi bawaan utama untuk mengambil status instance & berburu kapasitas server gratis
 try {
-    // Menembak perintah pembuatan VM ARM gratis di Batam secara langsung
+    // Menembak perintah pembuatan VM ARM gratis di Batam secara otomatis
     echo "Mengirim permintaan pembuatan server ARM ke Oracle Batam...\n";
-    $response = $api->createInstance($config);
+    $response = $api->createInstances($config);
     echo "Respons Oracle Cloud:\n";
     print_r($response);
 } catch (\Exception $e) {
