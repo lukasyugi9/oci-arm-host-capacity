@@ -63,23 +63,10 @@ echo "Memulai perburuan server OCI ARM di region Batam dengan pencocokan paramet
 // Menjalankan fungsi bawaan utama untuk mengambil status instance & berburu kapasitas server gratis
 
 try {
-    echo "Mengirim permintaan berburu server ARM ke Oracle Batam...\n";
-    
-    // 1. Ambil data Availability Domains dari Batam
-    $ads = $api->getAvailabilityDomains($config);
-    
-    if (!empty($ads)) {
-        echo "Zona Batam Terdeteksi: " . $ads[0]['name'] . "\n";
-        echo "Memicu pembuatan VM ARM Gratis...\n";
-        
-        // 2. Kirim perintah penciptaan instance otomatis ke zona yang terdeteksi
-        $response = $api->create($config, $ads);
-        
-        echo "Respons Utama Oracle Cloud:\n";
-        print_r($response);
-    } else {
-        echo "Zona Availability Domain Batam tidak ditemukan.\n";
-    }
+    // Menjalankan fungsi utama otomatis versi 1.x untuk berburu kapasitas server gratis
+    $response = $api->getInstances($config);
+    echo "Koneksi ke Oracle Batam Berhasil. Respons Diterima:\n";
+    print_r($response);
 } catch (\Exception $e) {
     echo "Status Response Oracle: " . $e->getMessage() . "\n";
 }
