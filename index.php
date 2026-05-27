@@ -7,13 +7,13 @@ use Hitrov\OciConfig;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-// Peta pencocokan nama parameter internal OciConfig dengan Environment Variables GitHub
-$envMap = [
+// Semua data lingkungan yang dikirim dari GitHub Actions
+$envValues = [
     'region'              => getenv('OCI_REGION') ?: 'ap-batam-1',
-    'ociUserId'           => getenv('OCI_USER_ID') ?: '',
-    'ociTenancyId'        => getenv('OCI_TENANCY_ID') ?: '',
-    'ociKeyFingerprint'   => getenv('OCI_KEY_FINGERPRINT') ?: '',
-    'ociPrivateKey'       => getenv('OCI_PRIVATE_KEY_FILENAME') ?: '',
+    'userId'              => getenv('OCI_USER_ID') ?: '',
+    'tenancyId'           => getenv('OCI_TENANCY_ID') ?: '',
+    'keyFingerprint'      => getenv('OCI_KEY_FINGERPRINT') ?: '',
+    'privateKeyFilename'  => getenv('OCI_PRIVATE_KEY_FILENAME') ?: '',
     'availabilityDomain'  => null,
     'subnetId'            => '',
     'imageId'             => '',
@@ -24,8 +24,6 @@ $envMap = [
     'maxInstances'        => 1,
 ];
 
-
-// Menggunakan PHP Reflection untuk mendeteksi secara otomatis urutan parameter constructor yang dibutuhkan oleh library Anda
 $reflection = new ReflectionClass(OciConfig::class);
 $constructor = $reflection->getConstructor();
 $parameters = $constructor->getParameters();
@@ -35,24 +33,32 @@ foreach ($parameters as $param) {
     $paramName = $param->getName();
     $paramType = $param->getType() ? $param->getType()->getName() : 'string';
     
-    // Ambil nilai default dari peta di atas jika ada
-    $value = array_key_exists($paramName, $envMap) ? $envMap[$paramName] : null;
+    // Cari kecocokan nama secara fleksibel (misal ociUserId atau tenancyId akan otomatis cocok)
+    $cleanParamName = strtolower(str_replace('oci', '', $paramName));
     
-    // Paksa konversi tipe data secara dinamis sesuai kebutuhan constructor internal
-    if ($paramType === 'int' && $value !== null) {
-        $args[] = (int) $value;
-    } elseif ($paramType === 'string' && $value !== null) {
-        $args[] = (string) $value;
+    $matchedValue = '';
+    foreach ($envValues as $key => $val) {
+        $cleanKey = strtolower(str_replace('oci', '', $key));
+        if ($cleanKey === $cleanParamName) {
+            $matchedValue = $val;
+            break;
+        }
+    }
+    
+    // Konversi tipe data otomatis sesuai cetakan constructor library Anda
+    if ($paramType === 'int') {
+        $args[] = (int) ($matchedValue ?: 0);
+    } elseif ($paramType === 'string') {
+        $args[] = (string) ($matchedValue ?: '');
     } else {
-        $args[] = $value;
+        $args[] = $matchedValue;
     }
 }
 
-// Inisialisasi konfigurasi dengan urutan parameter yang sudah diurutkan otomatis oleh sistem
 $config = $reflection->newInstanceArgs($args);
 $api = new OciApi();
 
-echo "Memulai perburuan server OCI ARM di region Batam dengan deteksi parameter otomatis...\n";
+echo "Memulai perburuan server OCI ARM di region Batam dengan pencocokan parameter fleksibel...\n";
 
 try {
     $api->createAvailabilityDomainInstances($config);
