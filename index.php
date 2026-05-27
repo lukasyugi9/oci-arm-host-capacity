@@ -73,7 +73,7 @@ try {
         echo "Memicu pembuatan VM ARM Gratis...\n";
         
         // 2. Kirim perintah penciptaan instance otomatis ke zona yang terdeteksi
-        $response = $api->createAvailabilityDomainInstances($config, $ads);
+        $response = $api->create($config, $ads);
         
         echo "Respons Utama Oracle Cloud:\n";
         print_r($response);
