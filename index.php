@@ -7,37 +7,54 @@ use Hitrov\OciConfig;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-// Memaksa pengambilan data lingkungan dengan tipe data murni
-$region = (string) getenv('OCI_REGION');
-$userId = (string) getenv('OCI_USER_ID');
-$tenancyId = (string) getenv('OCI_TENANCY_ID');
-$keyFingerprint = (string) getenv('OCI_KEY_FINGERPRINT');
-$privateKey = (string) getenv('OCI_PRIVATE_KEY_FILENAME');
-$bootVolumeSizeInGbs = (int) (getenv('OCI_BOOT_VOLUME_SIZE_IN_GBS') ?: 100);
-$maxInstances = (int) (getenv('OCI_MAX_INSTANCES') ?: 1);
+// Peta pencocokan nama parameter internal OciConfig dengan Environment Variables GitHub
+$envMap = [
+    'region'              => getenv('OCI_REGION') ?: 'ap-batam-1',
+    'userId'              => getenv('OCI_USER_ID') ?: '',
+    'tenancyId'           => getenv('OCI_TENANCY_ID') ?: '',
+    'keyFingerprint'      => getenv('OCI_KEY_FINGERPRINT') ?: '',
+    'privateKeyFilename'  => getenv('OCI_PRIVATE_KEY_FILENAME') ?: '',
+    'availabilityDomain'  => null,
+    'subnetId'            => '',
+    'imageId'             => '',
+    'bootVolumeSizeInGbs' => 100,
+    'memoryInGbs'         => 24,
+    'ocpus'               => 4,
+    'shape'               => 'VM.Standard.A1.Flex',
+    'maxInstances'        => 1,
+];
 
-// Membuat konfigurasi menggunakan urutan constructor asli bawaan library versi lama
-$config = new OciConfig(
-    $region,
-    $userId,
-    $tenancyId,
-    $keyFingerprint,
-    $privateKey,
-    null, // availabilityDomainConfig
-    '',   // subnetId
-    '',   // imageId
-    $bootVolumeSizeInGbs,
-    'VM.Standard.A1.Flex', // shape
-    $maxInstances,
-    4,  // ocpus murni int
-    24  // memoryInGbs murni int
-);
+// Menggunakan PHP Reflection untuk mendeteksi secara otomatis urutan parameter constructor yang dibutuhkan oleh library Anda
+$reflection = new ReflectionClass(OciConfig::class);
+$constructor = $reflection->getConstructor();
+$parameters = $constructor->getParameters();
+$args = [];
 
+foreach ($parameters as $param) {
+    $paramName = $param->getName();
+    $paramType = $param->getType() ? $param->getType()->getName() : 'string';
+    
+    // Ambil nilai default dari peta di atas jika ada
+    $value = array_key_exists($paramName, $envMap) ? $envMap[$paramName] : null;
+    
+    // Paksa konversi tipe data secara dinamis sesuai kebutuhan constructor internal
+    if ($paramType === 'int' && $value !== null) {
+        $args[] = (int) $value;
+    } elseif ($paramType === 'string' && $value !== null) {
+        $args[] = (string) $value;
+    } else {
+        $args[] = $value;
+    }
+}
+
+// Inisialisasi konfigurasi dengan urutan parameter yang sudah diurutkan otomatis oleh sistem
+$config = $reflection->newInstanceArgs($args);
 $api = new OciApi();
-echo "Menghubungkan ke Oracle Cloud Infrastructure Batam...\n";
+
+echo "Memulai perburuan server OCI ARM di region Batam dengan deteksi parameter otomatis...\n";
 
 try {
     $api->createAvailabilityDomainInstances($config);
 } catch (\Exception $e) {
-    echo "Status Response: " . $e->getMessage() . "\n";
+    echo "Status Response Oracle: " . $e->getMessage() . "\n";
 }
