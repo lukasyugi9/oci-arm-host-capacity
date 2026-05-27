@@ -2,7 +2,6 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-// Masukkan angka murni langsung ke dalam konfigurasi OCI tanpa getenv()
 $config = new Hitrov\OciConfig(
     getenv('OCI_REGION') ?: 'ap-batam-1',
     getenv('OCI_USER_OCID') ?: '',
@@ -10,9 +9,9 @@ $config = new Hitrov\OciConfig(
     getenv('OCI_COMPARTMENT_OCID') ?: '',
     getenv('OCI_FINGERPRINT') ?: '',
     getenv('OCI_PRIVATE_KEY') ?: '',
-    4,   // $ociOcpus langsung diisi angka murni
-    24,  // $ociMemory langsung diisi angka murni
-    100, // $ociBootVolume langsung diisi angka murni
+    4,
+    24,
+    100,
     getenv('OCI_DISPLAY_NAME') ?: 'openclaw-server'
 );
 
