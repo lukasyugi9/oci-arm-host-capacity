@@ -10,10 +10,10 @@ require_once __DIR__ . '/vendor/autoload.php';
 // Peta pencocokan nama parameter internal OciConfig dengan Environment Variables GitHub
 $envMap = [
     'region'              => getenv('OCI_REGION') ?: 'ap-batam-1',
-    'userId'              => getenv('OCI_USER_ID') ?: '',
-    'tenancyId'           => getenv('OCI_TENANCY_ID') ?: '',
-    'keyFingerprint'      => getenv('OCI_KEY_FINGERPRINT') ?: '',
-    'privateKeyFilename'  => getenv('OCI_PRIVATE_KEY_FILENAME') ?: '',
+    'ociUserId'           => getenv('OCI_USER_ID') ?: '',
+    'ociTenancyId'        => getenv('OCI_TENANCY_ID') ?: '',
+    'ociKeyFingerprint'   => getenv('OCI_KEY_FINGERPRINT') ?: '',
+    'ociPrivateKey'       => getenv('OCI_PRIVATE_KEY_FILENAME') ?: '',
     'availabilityDomain'  => null,
     'subnetId'            => '',
     'imageId'             => '',
@@ -23,6 +23,7 @@ $envMap = [
     'shape'               => 'VM.Standard.A1.Flex',
     'maxInstances'        => 1,
 ];
+
 
 // Menggunakan PHP Reflection untuk mendeteksi secara otomatis urutan parameter constructor yang dibutuhkan oleh library Anda
 $reflection = new ReflectionClass(OciConfig::class);
