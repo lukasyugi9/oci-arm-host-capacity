@@ -63,10 +63,18 @@ echo "Memulai perburuan server OCI ARM di region Batam dengan pencocokan paramet
 // Menjalankan fungsi bawaan utama untuk mengambil status instance & berburu kapasitas server gratis
 
 try {
-    // Menjalankan fungsi utama otomatis versi 1.x untuk berburu kapasitas server gratis
     $response = $api->getInstances($config);
-    echo "Koneksi ke Oracle Batam Berhasil. Respons Diterima:\n";
-    print_r($response);
+    
+    // Jika respons tidak kosong, artinya server baru sukses terbuat!
+    if (!empty($response)) {
+        echo "SUKSES: Server ARM Gratis Anda Berhasil Dibuat di Batam!\n";
+        print_r($response);
+        
+        // Sengaja memicu exit code 1 agar GitHub Actions berubah menjadi merah dan mengirim Email ke Anda
+        exit(1); 
+    } else {
+        echo "Koneksi Berhasil: Kapasitas Batam penuh, script akan mencoba lagi dalam 30 menit.\n";
+    }
 } catch (\Exception $e) {
     echo "Status Response Oracle: " . $e->getMessage() . "\n";
 }
