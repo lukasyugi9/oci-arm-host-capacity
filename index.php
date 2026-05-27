@@ -62,7 +62,10 @@ echo "Memulai perburuan server OCI ARM di region Batam dengan pencocokan paramet
 
 // Menjalankan fungsi bawaan utama untuk mengambil status instance & berburu kapasitas server gratis
 try {
-    $api->getInstances($config);
+    // Memaksa sistem mencetak respons asli dari Oracle ke log terminal
+    $response = $api->getInstances($config);
+    echo "Respons Berhasil Diterima:\n";
+    print_r($response);
 } catch (\Exception $e) {
     echo "Status Response Oracle: " . $e->getMessage() . "\n";
 }
