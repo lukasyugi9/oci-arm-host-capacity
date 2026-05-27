@@ -15,8 +15,20 @@ use Hitrov\OciConfig;
 use Hitrov\TooManyRequestsWaiter;
 
 $envFilename = empty($argv[1]) ? '.env' : $argv[1];
-$dotenv = Dotenv::createUnsafeImmutable(__DIR__, $envFilename);
-$dotenv->safeLoad();
+//$dotenv = Dotenv::createUnsafeImmutable(__DIR__, $envFilename);
+//$dotenv->safeLoad();
+
+// $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+// $dotenv->safeLoad();
+
+// Mengisi variabel langsung dari Environment OS jika file .env kosong
+$_ENV['OCI_REGION'] = $_ENV['OCI_REGION'] ?? getenv('OCI_REGION');
+$_ENV['OCI_USER_OCID'] = $_ENV['OCI_USER_OCID'] ?? getenv('OCI_USER_OCID');
+$_ENV['OCI_TENANCY_OCID'] = $_ENV['OCI_TENANCY_OCID'] ?? getenv('OCI_TENANCY_OCID');
+$_ENV['OCI_COMPARTMENT_OCID'] = $_ENV['OCI_COMPARTMENT_OCID'] ?? getenv('OCI_COMPARTMENT_OCID');
+$_ENV['OCI_FINGERPRINT'] = $_ENV['OCI_FINGERPRINT'] ?? getenv('OCI_FINGERPRINT');
+$_ENV['OCI_PRIVATE_KEY'] = $_ENV['OCI_PRIVATE_KEY'] ?? getenv('OCI_PRIVATE_KEY');
+
 
 /*
  * No need to modify any value in this file anymore!
