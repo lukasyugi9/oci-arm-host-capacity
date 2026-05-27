@@ -10,15 +10,15 @@ $config = new Hitrov\OciConfig(
     getenv('OCI_COMPARTMENT_OCID') ?: '',
     getenv('OCI_FINGERPRINT') ?: '',
     getenv('OCI_PRIVATE_KEY') ?: '',
-    getenv('OCI_OCPUS') ?: 4,
-    getenv('OCI_MEMORY_IN_GBS') ?: 24,
-    getenv('OCI_BOOT_VOLUME_SIZE_IN_GBS') ?: 100,
+    (int)(getenv('OCI_OCPUS') ?: 4),
+    (int)(getenv('OCI_MEMORY_IN_GBS') ?: 24),
+    (int)(getenv('OCI_BOOT_VOLUME_SIZE_IN_GBS') ?: 100),
     getenv('OCI_DISPLAY_NAME') ?: 'openclaw-server'
 );
 
 // Jalankan script utama pemburu server ARM
 $api = new Hitrov\OciApi();
-echo "Memulai perburuan server OCI ARM di region: " . getenv('OCI_REGION') . "\n";
+echo "Memulai perburuan server OCI ARM di region: " . (getenv('OCI_REGION') ?: 'ap-batam-1') . "\n";
 
 try {
     // Memanggil fungsi bawaan dari repositori untuk membuat server
