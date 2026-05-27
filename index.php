@@ -7,30 +7,37 @@ use Hitrov\OciConfig;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-// Memaksa sistem membaca data dari environment GitHub Actions dengan casting tipe data murni
-$configArray = [
-    'region'                => (string) getenv('OCI_REGION'),
-    'userId'                => (string) getenv('OCI_USER_ID'),
-    'tenancyId'             => (string) getenv('OCI_TENANCY_ID'),
-    'keyFingerprint'        => (string) getenv('OCI_KEY_FINGERPRINT'),
-    'privateKeyFilename'    => (string) getenv('OCI_PRIVATE_KEY_FILENAME'),
-    'subnetId'              => '',
-    'imageId'               => '',
-    'bootVolumeSizeInGbs'   => (int) (getenv('OCI_BOOT_VOLUME_SIZE_IN_GBS') ?: 100),
-    'shape'                 => 'VM.Standard.A1.Flex',
-    'maxInstances'          => (int) (getenv('OCI_MAX_INSTANCES') ?: 1),
-    'ocpus'                 => (int) 4,
-    'memoryInGbs'           => (int) 24,
-];
+// Memaksa pengambilan data lingkungan dengan tipe data murni
+$region = (string) getenv('OCI_REGION');
+$userId = (string) getenv('OCI_USER_ID');
+$tenancyId = (string) getenv('OCI_TENANCY_ID');
+$keyFingerprint = (string) getenv('OCI_KEY_FINGERPRINT');
+$privateKey = (string) getenv('OCI_PRIVATE_KEY_FILENAME');
+$bootVolumeSizeInGbs = (int) (getenv('OCI_BOOT_VOLUME_SIZE_IN_GBS') ?: 100);
+$maxInstances = (int) (getenv('OCI_MAX_INSTANCES') ?: 1);
 
-// Menggunakan static method fromArray untuk menghindari eror posisi argument constructor
-$config = OciConfig::fromArray($configArray);
+// Membuat konfigurasi menggunakan urutan constructor asli bawaan library versi lama
+$config = new OciConfig(
+    $region,
+    $userId,
+    $tenancyId,
+    $keyFingerprint,
+    $privateKey,
+    null, // availabilityDomainConfig
+    '',   // subnetId
+    '',   // imageId
+    $bootVolumeSizeInGbs,
+    'VM.Standard.A1.Flex', // shape
+    $maxInstances,
+    4,  // ocpus murni int
+    24  // memoryInGbs murni int
+);
+
 $api = new OciApi();
-
-echo "Menghubungkan ke Oracle Cloud Infrastructure (Region Batam) via Array Config...\n";
+echo "Menghubungkan ke Oracle Cloud Infrastructure Batam...\n";
 
 try {
     $api->createAvailabilityDomainInstances($config);
 } catch (\Exception $e) {
-    echo "Status Terkini: " . $e->getMessage() . "\n";
+    echo "Status Response: " . $e->getMessage() . "\n";
 }
