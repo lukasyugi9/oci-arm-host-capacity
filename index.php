@@ -21,13 +21,19 @@ $envFilename = empty($argv[1]) ? '.env' : $argv[1];
 // $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 // $dotenv->safeLoad();
 
-// Mengisi variabel langsung dari Environment OS jika file .env kosong
-$_ENV['OCI_REGION'] = $_ENV['OCI_REGION'] ?? getenv('OCI_REGION');
-$_ENV['OCI_USER_OCID'] = $_ENV['OCI_USER_OCID'] ?? getenv('OCI_USER_OCID');
-$_ENV['OCI_TENANCY_OCID'] = $_ENV['OCI_TENANCY_OCID'] ?? getenv('OCI_TENANCY_OCID');
-$_ENV['OCI_COMPARTMENT_OCID'] = $_ENV['OCI_COMPARTMENT_OCID'] ?? getenv('OCI_COMPARTMENT_OCID');
-$_ENV['OCI_FINGERPRINT'] = $_ENV['OCI_FINGERPRINT'] ?? getenv('OCI_FINGERPRINT');
-$_ENV['OCI_PRIVATE_KEY'] = $_ENV['OCI_PRIVATE_KEY'] ?? getenv('OCI_PRIVATE_KEY');
+// Mengisi variabel langsung ke System Environment Core menggunakan putenv
+if (getenv('OCI_USER_OCID') === false) {
+    putenv("OCI_REGION=ap-batam-1");
+    putenv("OCI_USER_OCID=" . ($_SERVER['OCI_USER_OCID'] ?? $_ENV['OCI_USER_OCID'] ?? ''));
+    putenv("OCI_TENANCY_OCID=" . ($_SERVER['OCI_TENANCY_OCID'] ?? $_ENV['OCI_TENANCY_OCID'] ?? ''));
+    putenv("OCI_COMPARTMENT_OCID=" . ($_SERVER['OCI_COMPARTMENT_OCID'] ?? $_ENV['OCI_COMPARTMENT_OCID'] ?? ''));
+    putenv("OCI_FINGERPRINT=" . ($_SERVER['OCI_FINGERPRINT'] ?? $_ENV['OCI_FINGERPRINT'] ?? ''));
+    putenv("OCI_PRIVATE_KEY=" . ($_SERVER['OCI_PRIVATE_KEY'] ?? $_ENV['OCI_PRIVATE_KEY'] ?? ''));
+    putenv("OCI_OCPUS=4");
+    putenv("OCI_MEMORY_IN_GBS=24");
+    putenv("OCI_BOOT_VOLUME_SIZE_IN_GBS=100");
+    putenv("OCI_DISPLAY_NAME=openclaw-server");
+}
 
 
 /*
